@@ -531,42 +531,42 @@ class Labyrinth3DEngine {
         bandMesh.rotation.x = 0; // Standing vertical circle
         this.centralRing.add(bandMesh);
 
-        // 3. Tapered shoulders merging into the setting
-        const shoulderGeo = new THREE.CylinderGeometry(0.45, 0.3, 1.5, 16);
+        // 3. Tapered shoulders merging into the setting (no overlap with loop inner profile)
+        const shoulderGeo = new THREE.CylinderGeometry(0.35, 0.45, 1.4, 16);
         
         const leftShoulder = new THREE.Mesh(shoulderGeo, goldMat);
-        leftShoulder.position.set(-1.8, 2.3, 0);
-        leftShoulder.rotation.z = -Math.PI / 4;
+        leftShoulder.position.set(-1.6, 3.1, 0);
+        leftShoulder.rotation.z = -Math.PI / 5;
         this.centralRing.add(leftShoulder);
 
         const rightShoulder = new THREE.Mesh(shoulderGeo, goldMat);
-        rightShoulder.position.set(1.8, 2.3, 0);
-        rightShoulder.rotation.z = Math.PI / 4;
+        rightShoulder.position.set(1.6, 3.1, 0);
+        rightShoulder.rotation.z = Math.PI / 5;
         this.centralRing.add(rightShoulder);
 
-        // 4. Basket setting loops
+        // 4. Basket setting loops sitting on top of the vertical band
         const basketLowerGeo = new THREE.TorusGeometry(0.6, 0.08, 8, 32);
         const basketLower = new THREE.Mesh(basketLowerGeo, goldMat);
-        basketLower.position.y = 3.0;
+        basketLower.position.y = 3.65;
         basketLower.rotation.x = Math.PI / 2;
         this.centralRing.add(basketLower);
 
         const basketMidGeo = new THREE.TorusGeometry(0.85, 0.08, 8, 32);
         const basketMid = new THREE.Mesh(basketMidGeo, goldMat);
-        basketMid.position.y = 3.3;
+        basketMid.position.y = 4.0;
         basketMid.rotation.x = Math.PI / 2;
         this.centralRing.add(basketMid);
 
         const basketUpperGeo = new THREE.TorusGeometry(1.1, 0.08, 8, 32);
         const basketUpper = new THREE.Mesh(basketUpperGeo, goldMat);
-        basketUpper.position.y = 3.6;
+        basketUpper.position.y = 4.35;
         basketUpper.rotation.x = Math.PI / 2;
         this.centralRing.add(basketUpper);
 
-        // 5. Prongs (8 elegant vertical/flared prongs holding the diamond)
+        // 5. Prongs (8 elegant vertical/flared prongs holding the diamond at vertices)
         const prongCount = 8;
         const prongRadius = 0.06;
-        const prongHeight = 1.0;
+        const prongHeight = 0.9;
         const prongGeo = new THREE.CylinderGeometry(prongRadius, prongRadius, prongHeight, 8);
         
         for (let i = 0; i < prongCount; i++) {
@@ -577,16 +577,16 @@ class Labyrinth3DEngine {
             const r2 = 1.15; // top radius
             const px = Math.cos(angle) * ((r1 + r2) / 2);
             const pz = Math.sin(angle) * ((r1 + r2) / 2);
-            prong.position.set(px, 3.3, pz);
+            prong.position.set(px, 4.0, pz);
             
             prong.rotation.z = -Math.cos(angle) * 0.25;
             prong.rotation.x = Math.sin(angle) * 0.25;
             this.centralRing.add(prong);
         }
 
-        // 6. Faceted Diamond Gem (Crown + Pavilion) resting in the prongs
+        // 6. Faceted Diamond Gem (Crown + Girdle + Pavilion) resting in the basket
         const diamondGroup = new THREE.Group();
-        diamondGroup.position.set(0, 3.75, 0);
+        diamondGroup.position.set(0, 4.5, 0);
 
         this.diamondMaterial = new THREE.MeshPhongMaterial({
             color: 0xffffff,
@@ -602,14 +602,20 @@ class Labyrinth3DEngine {
         // Crown (upper part of diamond): Truncated cone
         const crownGeo = new THREE.CylinderGeometry(0.7, 1.1, 0.35, 8);
         const crownMesh = new THREE.Mesh(crownGeo, this.diamondMaterial);
-        crownMesh.position.y = 0.175;
+        crownMesh.position.y = 0.215;
         diamondGroup.add(crownMesh);
 
-        // Pavilion (lower part of diamond): Inverted cone
+        // Girdle (middle thin circular band)
+        const girdleGeo = new THREE.CylinderGeometry(1.1, 1.1, 0.08, 8);
+        const girdleMesh = new THREE.Mesh(girdleGeo, this.diamondMaterial);
+        girdleMesh.position.y = 0;
+        diamondGroup.add(girdleMesh);
+
+        // Pavilion (lower part of diamond): Inverted cone pointing down
         const pavilionGeo = new THREE.ConeGeometry(1.1, 0.85, 8);
         const pavilionMesh = new THREE.Mesh(pavilionGeo, this.diamondMaterial);
         pavilionMesh.rotation.x = Math.PI; // point down
-        pavilionMesh.position.y = -0.425;
+        pavilionMesh.position.y = -0.465;
         diamondGroup.add(pavilionMesh);
 
         this.centralRing.add(diamondGroup);
