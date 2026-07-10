@@ -609,11 +609,13 @@ class PendereckiAudioEngine {
             this.animationFrameId = requestAnimationFrame(draw);
             
             if (!this.isPlaying) {
-                // Draw flat line or static bars
+                // Draw flat line or static bars as small circular dots at the bottom
                 this.visualizerCtx.clearRect(0, 0, this.visualizerCanvas.width, this.visualizerCanvas.height);
                 this.visualizerCtx.fillStyle = 'rgba(255, 255, 255, 0.25)';
                 for (let i = 0; i < 4; i++) {
-                    this.visualizerCtx.fillRect(i * 6, this.visualizerCanvas.height - 2, 4, 2);
+                    this.visualizerCtx.beginPath();
+                    this.visualizerCtx.arc(i * 6 + 2, this.visualizerCanvas.height - 2, 1.5, 0, Math.PI * 2);
+                    this.visualizerCtx.fill();
                 }
                 return;
             }
@@ -640,8 +642,18 @@ class PendereckiAudioEngine {
                 }
                 
                 const x = i * (barWidth + barGap);
-                const y = this.visualizerCanvas.height - barHeight;
-                this.visualizerCtx.fillRect(x, y, barWidth, barHeight);
+                
+                // Draw a column of tiny round dots instead of a solid rectangle
+                const dotRadius = 1.5;
+                const dotSpacing = 4;
+                const dotCount = Math.ceil(barHeight / dotSpacing);
+                
+                for (let d = 0; d < dotCount; d++) {
+                    const cy = this.visualizerCanvas.height - 2 - d * dotSpacing;
+                    this.visualizerCtx.beginPath();
+                    this.visualizerCtx.arc(x + 2, cy, dotRadius, 0, Math.PI * 2);
+                    this.visualizerCtx.fill();
+                }
             }
         };
 
