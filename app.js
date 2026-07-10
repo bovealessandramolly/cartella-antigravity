@@ -4,14 +4,12 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize core system objects
-    const audio = new PendereckiAudioEngine();
     const threeD = new Labyrinth3DEngine('canvas-3d');
     
     // Core State Variables
     let activeSpotIndex = -1;
     let unlockedSpots = [false, false, false, false];
     let allSpotsUnlocked = false;
-    let activeTreeRustle = null;
     
     // Fade in intro splash screen content beautifully using GSAP
     gsap.timeline()
@@ -48,13 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 80);
 
         enterBtn.addEventListener('click', async () => {
-            // Initialize Audio Engine inside user gesture safely
-            await audio.init();
-            
-            // Setup Visualizer Canvas Hook
-            const vCanvas = document.getElementById('visualizer-canvas');
-            audio.setupVisualizer(vCanvas);
-            
             // Fade out splash loader screen
             const splash = document.getElementById('intro-splash');
             splash.classList.add('fade-out');
@@ -68,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             unlockAllLabyrinth();
 
             // Initial subtle toast notification
-            showToastNotification("Esplora le colonne dorate per sbloccare musica e cambiare colore al diamante.");
+            showToastNotification("Esplora le colonne dorate per sbloccare le diverse angolazioni dell'anello.");
         });
     }
 
@@ -129,27 +120,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const titleText = document.getElementById('current-spot-title');
         
         numText.textContent = String(index + 1).padStart(2, '0');
-        titleText.textContent = audio.tracks[index].title;
+        titleText.textContent = threeD.hotspotCoordinates[index].title;
     }
 
     // 4. Hotspot Arrival Unlock Logic
     window.addEventListener('hotspotReached', (e) => {
         const idx = e.detail.index;
         
-        // Activate Synth Track Playback
-        audio.playTrack(idx);
-        
-        // Update Bottom Widget play icon
-        togglePlayPauseIcon(true);
-        
         // Unlock Spot in State
         if (!unlockedSpots[idx]) {
             unlockedSpots[idx] = true;
-            audio.unlockTrack(idx);
             
             // Mark Node as unlocked (checkmark bullet)
             const node = document.getElementById(`node-${idx}`);
-            node.classList.add('unlocked');
+            if (node) node.classList.add('unlocked');
             
             // Mark spot on minimap compass
             const mapSpot = document.getElementById(`map-spot-${idx}`);
@@ -157,18 +141,22 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Update Spot HUD status badge
             const badge = document.getElementById('current-spot-status');
-            badge.textContent = "UNLOCKED";
-            badge.className = "spot-status-badge unlocked";
+            if (badge) {
+                badge.textContent = "UNLOCKED";
+                badge.className = "spot-status-badge unlocked";
+            }
             
-            showToastNotification(`Discovered piece: ${audio.tracks[idx].title}`);
+            showToastNotification(`Esplorata: ${threeD.hotspotCoordinates[idx].title}`);
             
             // Check if all spots are unlocked
             checkAllSpotsUnlocked();
         } else {
             // Already unlocked
             const badge = document.getElementById('current-spot-status');
-            badge.textContent = "UNLOCKED";
-            badge.className = "spot-status-badge unlocked";
+            if (badge) {
+                badge.textContent = "UNLOCKED";
+                badge.className = "spot-status-badge unlocked";
+            }
         }
     });
 
@@ -177,7 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function checkAllSpotsUnlocked() {
         const completedCount = unlockedSpots.filter(Boolean).length;
-        document.getElementById('unlocked-count-val').textContent = completedCount;
+        const countVal = document.getElementById('unlocked-count-val');
+        if (countVal) countVal.textContent = completedCount;
 
         if (completedCount === 4 && !allSpotsUnlocked) {
             allSpotsUnlocked = true;
@@ -188,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Fade in the center Bravo completion card
             setTimeout(() => {
                 const bravo = document.getElementById('bravo-panel');
-                bravo.classList.remove('hidden');
+                if (bravo) bravo.classList.remove('hidden');
             }, 1500);
         }
     }
@@ -200,9 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
         unlockedSpots = [true, true, true, true];
         allSpotsUnlocked = true;
         
-        // Force audio engine tracks to be unlocked without chime
-        audio.unlockedTracks = [true, true, true, true, true];
-        
         // Update all UI elements for all 4 spots
         for (let idx = 0; idx < 4; idx++) {
             // 1. Mark progress nodes
@@ -212,21 +198,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // 2. Mark map markers
             const mapSpot = document.getElementById(`map-spot-${idx}`);
             if (mapSpot) mapSpot.classList.add('unlocked');
-            
-            // 3. Mark playlist items
-            const plLock = document.getElementById(`pl-lock-${idx}`);
-            if (plLock) {
-                plLock.classList.remove('locked');
-                plLock.classList.add('unlocked');
-            }
-            
-            const plItems = document.querySelectorAll('.playlist-item');
-            const plItem = plItems[idx];
-            if (plItem) plItem.classList.add('unlocked-list-item');
         }
         
-        // Update playlist count
-        document.getElementById('unlocked-count-val').textContent = "4";
+        const countVal = document.getElementById('unlocked-count-val');
+        if (countVal) countVal.textContent = "4";
         
         // Reveal bravo dialogue panel
         const bravo = document.getElementById('bravo-panel');
@@ -263,69 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. HUD Audio Play/Pause Button Hooks
-    const audioBtn = document.getElementById('audio-play-pause-btn');
-    audioBtn.addEventListener('click', () => {
-        const isPlaying = audio.togglePlayPause();
-        togglePlayPauseIcon(isPlaying);
-    });
 
-    function togglePlayPauseIcon(isPlaying) {
-        const playSvg = document.getElementById('svg-play');
-        const pauseSvg = document.getElementById('svg-pause');
-        if (isPlaying) {
-            playSvg.classList.add('hidden');
-            pauseSvg.classList.remove('hidden');
-        } else {
-            playSvg.classList.remove('hidden');
-            pauseSvg.classList.add('hidden');
-        }
-    }
 
-    // 6. Floating Playlist Panel Card Toggle
-    const playlistToggle = document.getElementById('playlist-toggle-btn');
-    const playlistPanel = document.getElementById('audio-playlist-panel');
-    const caretIcon = playlistToggle.querySelector('.caret-icon');
 
-    playlistToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const hidden = playlistPanel.classList.toggle('hidden');
-        caretIcon.classList.toggle('rotate', !hidden);
-    });
-
-    // Close playlist card if clicking outside
-    document.addEventListener('click', () => {
-        playlistPanel.classList.add('hidden');
-        caretIcon.classList.remove('rotate');
-    });
-
-    playlistPanel.addEventListener('click', (e) => e.stopPropagation());
-
-    // Playlist item clicks to fly directly to spots (if unlocked)
-    const plItems = document.querySelectorAll('.playlist-item');
-    plItems.forEach((item) => {
-        item.addEventListener('click', () => {
-            const trackIdx = parseInt(item.getAttribute('data-track'));
-            
-            // Check if unlocked or user has permission to click it
-            // Let them teleport directly to it, triggering the unlock flight!
-            playlistPanel.classList.add('hidden');
-            caretIcon.classList.remove('rotate');
-            
-            navigateToSpot(trackIdx);
-            
-            // Update active list classes
-            plItems.forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-        });
-    });
-
-    // Custom track unlock callback to update active playlist cards
-    window.addEventListener('trackUnlocked', (e) => {
-        const idx = e.detail.index;
-        const plItem = plItems[idx];
-        if (plItem) plItem.classList.add('unlocked-list-item');
-    });
 
     // 7. Full Hamburger Menu toggling
     const menuBtn = document.getElementById('menu-toggle-btn');
@@ -359,15 +274,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Reset Spot progress active status
                 activeSpotIndex = -1;
                 for (let i = 0; i < 4; i++) {
-                    document.getElementById(`node-${i}`).classList.remove('active');
+                    const node = document.getElementById(`node-${i}`);
+                    if (node) node.classList.remove('active');
                 }
                 const numText = document.getElementById('current-spot-num');
                 const titleText = document.getElementById('current-spot-title');
-                numText.textContent = "00";
-                titleText.textContent = "Exploring the Labyrinth...";
-                
-                audio.playTrack(-1); // play background drone
-                togglePlayPauseIcon(true);
+                if (numText) numText.textContent = "00";
+                if (titleText) titleText.textContent = "Exploring the Labyrinth...";
             }
         });
     });
@@ -428,14 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function closeHistoryDrawer() {
         historyDrawer.classList.remove('open');
         document.body.classList.remove('drawer-open');
-        
-        // Stop any active foliage rustling audio context
-        if (activeTreeRustle) {
-            activeTreeRustle.stop();
-            activeTreeRustle = null;
-            document.getElementById('play-tree-rustle-btn').classList.remove('playing');
-            document.getElementById('play-tree-rustle-btn').querySelector('span').textContent = "Listen to foliage rustle";
-        }
     }
 
     // Interactive Tree catalog inside the history panel
@@ -471,33 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Apply text swap
             treeProfileName.textContent = data.name;
             treeProfileDesc.textContent = data.desc;
-
-            // If a sound is currently playing, stop it and start new tree sound
-            if (activeTreeRustle) {
-                activeTreeRustle.stop();
-                activeTreeRustle = null;
-                treeRustleBtn.classList.remove('playing');
-                treeRustleBtn.querySelector('span').textContent = "Listen to foliage rustle";
-            }
         });
-    });
-
-    // Play/Pause Foliage Rustle using Web Audio Synth
-    treeRustleBtn.addEventListener('click', () => {
-        if (activeTreeRustle) {
-            // Stop sound
-            activeTreeRustle.stop();
-            activeTreeRustle = null;
-            treeRustleBtn.classList.remove('playing');
-            treeRustleBtn.querySelector('span').textContent = "Listen to foliage rustle";
-        } else {
-            // Play sound
-            activeTreeRustle = audio.playTreeRustle(selectedTreeKey);
-            if (activeTreeRustle) {
-                treeRustleBtn.classList.add('playing');
-                treeRustleBtn.querySelector('span').textContent = "Mute rustling sound";
-            }
-        }
     });
 
     // 9. Circular Compass Minimap expands to Full Estate Map modal
@@ -540,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             num: ".04",
             name: "The Labyrinth (.05)",
-            desc: "A living representation of mathematical and spiritual geometry, cultivated from Chartres and Reims Cathedral layouts. Inside this hedge maze, Krzysztof Penderecki placed four secret sonorous spaces containing acoustic recordings representing his artistic peaks.",
+            desc: "A living representation of mathematical and spiritual geometry, cultivated from Chartres and Reims Cathedral layouts. Inside this hedge maze, four viewpoints allow you to admire the geometry of the gold ring and its diamond setting from different angles.",
             species: ["Taxus baccata (English Yew)", "Carpinus betulus (European Hornbeam)"]
         },
         {

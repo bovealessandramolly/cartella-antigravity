@@ -46,10 +46,10 @@ class Labyrinth3DEngine {
         
         // Hotspot 3D locations in the scene
         this.hotspotCoordinates = [
-            { id: 0, x: -28, y: 0, z: -20, unlocked: false, title: "De natura sonoris II" },
-            { id: 1, x: 32,  y: 0, z: -10, unlocked: false, title: "Threnody to Hiroshima" },
-            { id: 2, x: -15, y: 0, z: 30,  unlocked: false, title: "Polymorphia" },
-            { id: 3, x: 25,  y: 0, z: 28,  unlocked: false, title: "Symphony No. 3" }
+            { id: 0, x: -28, y: 0, z: -20, unlocked: false, title: "Vista Prospettica" },
+            { id: 1, x: 32,  y: 0, z: -10, unlocked: false, title: "Vista dall'Alto" },
+            { id: 2, x: -15, y: 0, z: 30,  unlocked: false, title: "Dettaglio Castone" },
+            { id: 3, x: 25,  y: 0, z: 28,  unlocked: false, title: "Dettaglio Diamante" }
         ];
         
         this.activeHotspotIndex = -1;

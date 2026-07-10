@@ -32,7 +32,7 @@
             <button id="enter-garden-btn" class="enter-btn disabled" disabled>
                 <span>CARICAMENTO...</span>
             </button>
-            <div class="splash-notice">Cuffie consigliate. L'audio si attiverà all'ingresso nel labirinto.</div>
+
         </div>
     </div>
 
@@ -115,72 +115,7 @@
     <!-- 7. HUD Bottom Overlay Bar -->
     <div class="hud-bottom">
         
-        <!-- Left: Audio Widget -->
-        <div class="audio-hud-widget">
-            <button id="audio-play-pause-btn" class="audio-play-btn" aria-label="Play or Pause Soundscape">
-                <div class="play-icon-svg">
-                    <svg viewBox="0 0 24 24" width="18" height="18" id="svg-play">
-                        <path d="M8 5v14l11-7z" fill="currentColor"/>
-                    </svg>
-                    <svg viewBox="0 0 24 24" width="18" height="18" id="svg-pause" class="hidden">
-                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="currentColor"/>
-                    </svg>
-                </div>
-                <!-- Dynamic equalizing visualizer columns -->
-                <canvas id="visualizer-canvas" width="24" height="18"></canvas>
-            </button>
-            
-            <div class="track-details">
-                <span class="track-time" id="track-time-display">00:00</span>
-                <div class="track-text-container">
-                    <span class="track-title" id="hud-track-title">Sonorous Background Drone</span>
-                    <span class="track-composer" id="hud-track-composer">Krzysztof Penderecki</span>
-                </div>
-                <button id="playlist-toggle-btn" class="playlist-caret-btn" aria-label="Toggle Track List">
-                    <svg viewBox="0 0 24 24" width="16" height="16" class="caret-icon">
-                        <path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z" fill="currentColor"/>
-                    </svg>
-                </button>
-            </div>
 
-            <!-- Floating Audio Playlist Panel -->
-            <div id="audio-playlist-panel" class="playlist-panel-card hidden">
-                <div class="playlist-header">
-                    <span>DISCOVERED PIECES</span>
-                    <span class="playlist-count"><span id="unlocked-count-val">0</span>/4</span>
-                </div>
-                <ul class="playlist-items">
-                    <li class="playlist-item active" data-track="0">
-                        <div class="playlist-track-status locked" id="pl-lock-0"></div>
-                        <div class="playlist-track-info">
-                            <span class="pl-title">De natura sonoris II</span>
-                            <span class="pl-desc">1971 • Eerie shifting textures</span>
-                        </div>
-                    </li>
-                    <li class="playlist-item" data-track="1">
-                        <div class="playlist-track-status locked" id="pl-lock-1"></div>
-                        <div class="playlist-track-info">
-                            <span class="pl-title">Threnody to the Victims of Hiroshima</span>
-                            <span class="pl-desc">1960 • Chilling violin glissandi</span>
-                        </div>
-                    </li>
-                    <li class="playlist-item" data-track="2">
-                        <div class="playlist-track-status locked" id="pl-lock-2"></div>
-                        <div class="playlist-track-info">
-                            <span class="pl-title">Polymorphia</span>
-                            <span class="pl-desc">1961 • Sonorous microtonal clusters</span>
-                        </div>
-                    </li>
-                    <li class="playlist-item" data-track="3">
-                        <div class="playlist-track-status locked" id="pl-lock-3"></div>
-                        <div class="playlist-track-info">
-                            <span class="pl-title">Symphony No. 3 (Passacaglia)</span>
-                            <span class="pl-desc">1995 • Deep driving string pulses</span>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
 
         <!-- Center: Section Indicator & Progress Bar -->
         <div class="section-indicator-widget">
@@ -294,7 +229,7 @@
                         <h3 class="sec-name" id="estate-sec-name">The Labyrinth</h3>
                         <div class="sec-divider"></div>
                         <p class="sec-desc" id="estate-sec-desc">
-                            A living representation of mathematical and spiritual geometry, cultivated from the Chartres and Reims cathedral floor designs. Inside this grand hedge maze, Krzysztof Penderecki placed four secret sonorous spaces containing acoustic recordings representing his artistic peaks.
+                            A living representation of mathematical and spiritual geometry, cultivated from the Chartres and Reims cathedral floor designs. Inside this grand hedge maze, four viewpoints allow you to admire the geometry of the gold ring and its diamond setting from different angles.
                         </p>
                         <div class="sec-botanical-info">
                             <h4>PRINCIPAL SPECIES</h4>
@@ -409,7 +344,7 @@
                 <div class="drawer-editorial-section">
                     <h2 class="sub-section-title">The Living Material: Hedges & Trees</h2>
                     <p class="drawer-para">
-                        The labyrinth consists of thousands of painstakingly manicured hedges and trees. Click on any species below to explore its botanical details and listen to the ambient rustle of its foliage recorded directly in the Lusławice estate.
+                        The labyrinth consists of thousands of painstakingly manicured hedges and trees. Click on any species below to explore its botanical details.
                     </p>
 
                     <div class="tree-catalog-grid">
@@ -442,14 +377,7 @@
                         <p id="tree-profile-desc" class="profile-desc">
                             The backbone of the labyrinth hedges. Yew is legendary for its long life, carrying mythological links to eternity, rebirth, and silence. Its dense, deep dark evergreen needles form the impenetrable green walls of the labyrinth, absorbing noise and providing the perfect acoustic canvas.
                         </p>
-                        <div class="tree-audio-player">
-                            <button id="play-tree-rustle-btn" class="tree-audio-btn">
-                                <svg viewBox="0 0 24 24" width="16" height="16" class="rustle-icon">
-                                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" fill="currentColor"/>
-                                </svg>
-                                <span>Listen to foliage rustle</span>
-                            </button>
-                        </div>
+
                     </div>
                 </div>
 
@@ -525,7 +453,6 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <!-- Project Custom Scripts -->
-    <script src="audio-engine.js?v=5"></script>
     <script src="3d-engine.js?v=5"></script>
     <script src="app.js?v=5"></script>
 </body>
