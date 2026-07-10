@@ -64,6 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const buyBtn = document.getElementById('buy-ring-btn');
             if (buyBtn) buyBtn.classList.remove('hidden');
 
+            // Unlock all spots from the start to allow free exploration
+            unlockAllLabyrinth();
+
             // Initial subtle toast notification
             showToastNotification("Esplora le colonne dorate per sbloccare musica e cambiare colore al diamante.");
         });
@@ -187,6 +190,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 const bravo = document.getElementById('bravo-panel');
                 bravo.classList.remove('hidden');
             }, 1500);
+        }
+    }
+
+    /**
+     * Unlock all labyrinth spots at start
+     */
+    function unlockAllLabyrinth() {
+        unlockedSpots = [true, true, true, true];
+        allSpotsUnlocked = true;
+        
+        // Force audio engine tracks to be unlocked without chime
+        audio.unlockedTracks = [true, true, true, true, true];
+        
+        // Update all UI elements for all 4 spots
+        for (let idx = 0; idx < 4; idx++) {
+            // 1. Mark progress nodes
+            const node = document.getElementById(`node-${idx}`);
+            if (node) node.classList.add('unlocked');
+            
+            // 2. Mark map markers
+            const mapSpot = document.getElementById(`map-spot-${idx}`);
+            if (mapSpot) mapSpot.classList.add('unlocked');
+            
+            // 3. Mark playlist items
+            const plLock = document.getElementById(`pl-lock-${idx}`);
+            if (plLock) {
+                plLock.classList.remove('locked');
+                plLock.classList.add('unlocked');
+            }
+            
+            const plItems = document.querySelectorAll('.playlist-item');
+            const plItem = plItems[idx];
+            if (plItem) plItem.classList.add('unlocked-list-item');
+        }
+        
+        // Update playlist count
+        document.getElementById('unlocked-count-val').textContent = "4";
+        
+        // Reveal bravo dialogue panel
+        const bravo = document.getElementById('bravo-panel');
+        if (bravo) {
+            bravo.classList.remove('hidden');
         }
     }
 
@@ -365,6 +410,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     readMoreBtn.addEventListener('click', () => openHistoryDrawer());
     closeDrawerBtn.addEventListener('click', () => closeHistoryDrawer());
+
+    // Close success bravo card listener
+    const closeBravoBtn = document.getElementById('close-bravo-btn');
+    if (closeBravoBtn) {
+        closeBravoBtn.addEventListener('click', () => {
+            const bravo = document.getElementById('bravo-panel');
+            if (bravo) bravo.classList.add('hidden');
+        });
+    }
 
     function openHistoryDrawer() {
         historyDrawer.classList.add('open');

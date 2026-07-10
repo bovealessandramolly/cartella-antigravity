@@ -937,6 +937,7 @@ button {
 }
 
 .bravo-card {
+    position: relative;
     background: rgba(23, 19, 23, 0.8);
     border: 1px solid rgba(226, 199, 131, 0.25);
     backdrop-filter: blur(30px);
@@ -947,6 +948,28 @@ button {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.close-bravo-btn {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    padding: 5px;
+    z-index: 12;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.close-bravo-btn:hover {
+    color: var(--accent-gold);
+    transform: scale(1.1);
 }
 
 .bravo-icon {

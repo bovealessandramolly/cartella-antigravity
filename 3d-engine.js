@@ -2,6 +2,23 @@
    PENDERECKI'S GARDEN: 3D WEBGL PARTICLE ENGINE (THREE.JS)
    ========================================================================== */
 
+function createCircleTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    
+    const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+    grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    grad.addColorStop(0.5, 'rgba(255, 255, 255, 0.8)');
+    grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 32, 32);
+    
+    return new THREE.CanvasTexture(canvas);
+}
+
 class Labyrinth3DEngine {
     constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
@@ -176,7 +193,9 @@ class Labyrinth3DEngine {
             opacity: 0.85,
             sizeAttenuation: true,
             blending: THREE.AdditiveBlending,
-            depthWrite: false
+            depthWrite: false,
+            map: createCircleTexture(),
+            alphaTest: 0.005
         });
 
         // Points Representation
@@ -213,7 +232,9 @@ class Labyrinth3DEngine {
             opacity: 0.45,
             sizeAttenuation: true,
             blending: THREE.AdditiveBlending,
-            depthWrite: false
+            depthWrite: false,
+            map: createCircleTexture(),
+            alphaTest: 0.005
         });
 
         this.sporeParticles = new THREE.Points(geometry, material);
@@ -260,7 +281,9 @@ class Labyrinth3DEngine {
                 opacity: 0.7,
                 sizeAttenuation: true,
                 blending: THREE.AdditiveBlending,
-                depthWrite: false
+                depthWrite: false,
+                map: createCircleTexture(),
+                alphaTest: 0.005
             });
 
             const pillar = new THREE.Points(geometry, material);
@@ -505,7 +528,7 @@ class Labyrinth3DEngine {
         // 2. Torus for the main Ring Band
         const bandGeo = new THREE.TorusGeometry(3.2, 0.45, 16, 100);
         const bandMesh = new THREE.Mesh(bandGeo, goldMat);
-        bandMesh.rotation.x = Math.PI / 2;
+        bandMesh.rotation.x = 0; // Standing vertical circle
         this.centralRing.add(bandMesh);
 
         // 3. Tapered shoulders merging into the setting
