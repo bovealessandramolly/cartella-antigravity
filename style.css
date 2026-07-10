@@ -1925,23 +1925,31 @@ body.drawer-open .atmosphere-overlay {
 }
 
 /* --- 12. Floating Buy Button --- */
+.top-right-hud-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    pointer-events: none;
+}
+
+.top-right-hud-container * {
+    pointer-events: auto;
+}
+
 .buy-ring-btn {
-    position: fixed;
-    bottom: 120px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 9;
+    position: relative;
+    z-index: 15;
     display: flex;
     align-items: center;
     gap: 10px;
     background: rgba(191, 157, 82, 0.15);
     border: 1px solid rgba(191, 157, 82, 0.5);
     color: var(--text-light);
-    padding: 12px 30px;
+    padding: 12px 25px;
     font-family: var(--font-sans);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 500;
-    letter-spacing: 0.25em;
+    letter-spacing: 0.2em;
     border-radius: 40px;
     backdrop-filter: var(--hud-blur);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(191, 157, 82, 0.1);
@@ -1954,13 +1962,13 @@ body.drawer-open .atmosphere-overlay {
     background: var(--accent-gold);
     color: var(--bg-color);
     box-shadow: 0 15px 40px rgba(191, 157, 82, 0.4);
-    transform: translateX(-50%) translateY(-2px);
+    transform: translateY(-2px);
 }
 
 .buy-ring-btn.hidden {
     opacity: 0;
     visibility: hidden;
-    transform: translateX(-50%) translateY(20px);
+    transform: translateY(10px);
 }
 
 /* --- 13. Product Sheet Modal --- */

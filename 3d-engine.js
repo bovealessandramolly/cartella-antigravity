@@ -494,53 +494,112 @@ class Labyrinth3DEngine {
     generateCentralRing() {
         this.centralRing = new THREE.Group();
         
-        // 1. Torus for the Ring Band
-        const bandGeo = new THREE.TorusGeometry(3.2, 0.45, 16, 100);
-        const bandMat = new THREE.MeshStandardMaterial({
+        // 1. Polished Gold Material for the band and setting
+        const goldMat = new THREE.MeshPhongMaterial({
             color: 0xBF9D52, // Brand Gold
-            metalness: 0.9,
-            roughness: 0.15,
-            flatShading: true
+            specular: 0xffe8a3, // Bright metallic reflection
+            shininess: 90,
+            flatShading: false // Smooth polished look
         });
-        const bandMesh = new THREE.Mesh(bandGeo, bandMat);
+
+        // 2. Torus for the main Ring Band
+        const bandGeo = new THREE.TorusGeometry(3.2, 0.45, 16, 100);
+        const bandMesh = new THREE.Mesh(bandGeo, goldMat);
         bandMesh.rotation.x = Math.PI / 2;
         this.centralRing.add(bandMesh);
 
-        // 2. Ring Prongs / Setting at the top
-        const prongGeo = new THREE.CylinderGeometry(0.08, 0.12, 1.0, 8);
-        const prongPositions = [
-            { x: 0.6, z: 0.6 },
-            { x: -0.6, z: 0.6 },
-            { x: 0.6, z: -0.6 },
-            { x: -0.6, z: -0.6 }
-        ];
-        prongPositions.forEach(pos => {
-            const prong = new THREE.Mesh(prongGeo, bandMat);
-            prong.position.set(pos.x, 3.4, pos.z);
-            prong.rotation.x = pos.z * 0.2;
-            prong.rotation.z = -pos.x * 0.2;
+        // 3. Tapered shoulders merging into the setting
+        const shoulderGeo = new THREE.CylinderGeometry(0.45, 0.3, 1.5, 16);
+        
+        const leftShoulder = new THREE.Mesh(shoulderGeo, goldMat);
+        leftShoulder.position.set(-1.8, 2.3, 0);
+        leftShoulder.rotation.z = -Math.PI / 4;
+        this.centralRing.add(leftShoulder);
+
+        const rightShoulder = new THREE.Mesh(shoulderGeo, goldMat);
+        rightShoulder.position.set(1.8, 2.3, 0);
+        rightShoulder.rotation.z = Math.PI / 4;
+        this.centralRing.add(rightShoulder);
+
+        // 4. Basket setting loops
+        const basketLowerGeo = new THREE.TorusGeometry(0.6, 0.08, 8, 32);
+        const basketLower = new THREE.Mesh(basketLowerGeo, goldMat);
+        basketLower.position.y = 3.0;
+        basketLower.rotation.x = Math.PI / 2;
+        this.centralRing.add(basketLower);
+
+        const basketMidGeo = new THREE.TorusGeometry(0.85, 0.08, 8, 32);
+        const basketMid = new THREE.Mesh(basketMidGeo, goldMat);
+        basketMid.position.y = 3.3;
+        basketMid.rotation.x = Math.PI / 2;
+        this.centralRing.add(basketMid);
+
+        const basketUpperGeo = new THREE.TorusGeometry(1.1, 0.08, 8, 32);
+        const basketUpper = new THREE.Mesh(basketUpperGeo, goldMat);
+        basketUpper.position.y = 3.6;
+        basketUpper.rotation.x = Math.PI / 2;
+        this.centralRing.add(basketUpper);
+
+        // 5. Prongs (8 elegant vertical/flared prongs holding the diamond)
+        const prongCount = 8;
+        const prongRadius = 0.06;
+        const prongHeight = 1.0;
+        const prongGeo = new THREE.CylinderGeometry(prongRadius, prongRadius, prongHeight, 8);
+        
+        for (let i = 0; i < prongCount; i++) {
+            const angle = (i / prongCount) * Math.PI * 2;
+            const prong = new THREE.Mesh(prongGeo, goldMat);
+            
+            const r1 = 0.6; // bottom radius
+            const r2 = 1.15; // top radius
+            const px = Math.cos(angle) * ((r1 + r2) / 2);
+            const pz = Math.sin(angle) * ((r1 + r2) / 2);
+            prong.position.set(px, 3.3, pz);
+            
+            prong.rotation.z = -Math.cos(angle) * 0.25;
+            prong.rotation.x = Math.sin(angle) * 0.25;
             this.centralRing.add(prong);
-        });
+        }
 
-        // 3. Faceted Diamond Gem resting in the prongs
-        const diamondGeo = new THREE.IcosahedronGeometry(1.0, 0);
-        this.diamondMaterial = new THREE.MeshStandardMaterial({
-            color: 0xBF9D52, // Default Gold
-            emissive: 0xBF9D52,
-            emissiveIntensity: 0.6,
-            metalness: 0.1,
-            roughness: 0.1,
+        // 6. Faceted Diamond Gem (Crown + Pavilion) resting in the prongs
+        const diamondGroup = new THREE.Group();
+        diamondGroup.position.set(0, 3.75, 0);
+
+        this.diamondMaterial = new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            emissive: 0x111111,
+            specular: 0xffffff,
+            shininess: 100,
             transparent: true,
-            opacity: 0.9,
-            flatShading: true
+            opacity: 0.85,
+            flatShading: true,
+            side: THREE.DoubleSide
         });
-        const diamondMesh = new THREE.Mesh(diamondGeo, this.diamondMaterial);
-        diamondMesh.position.set(0, 3.8, 0);
-        this.centralRing.add(diamondMesh);
 
-        // Set initial position and add to scene
-        this.centralRing.position.set(0, 1.0, 0);
+        // Crown (upper part of diamond): Truncated cone
+        const crownGeo = new THREE.CylinderGeometry(0.7, 1.1, 0.35, 8);
+        const crownMesh = new THREE.Mesh(crownGeo, this.diamondMaterial);
+        crownMesh.position.y = 0.175;
+        diamondGroup.add(crownMesh);
+
+        // Pavilion (lower part of diamond): Inverted cone
+        const pavilionGeo = new THREE.ConeGeometry(1.1, 0.85, 8);
+        const pavilionMesh = new THREE.Mesh(pavilionGeo, this.diamondMaterial);
+        pavilionMesh.rotation.x = Math.PI; // point down
+        pavilionMesh.position.y = -0.425;
+        diamondGroup.add(pavilionMesh);
+
+        this.centralRing.add(diamondGroup);
+
+        // Set scale and initial position, then add to scene
+        this.centralRing.scale.set(2.3, 2.3, 2.3);
+        this.centralRing.position.set(0, 2.0, 0);
         this.scene.add(this.centralRing);
+
+        // Add a dedicated local pointlight above the ring to illuminate it
+        const ringLight = new THREE.PointLight(0xfff5e6, 2.5, 30);
+        ringLight.position.set(0, 10, 0);
+        this.scene.add(ringLight);
     }
 
     /**
@@ -636,7 +695,7 @@ class Labyrinth3DEngine {
         if (this.centralRing) {
             this.centralRing.rotation.y = time * 0.4;
             this.centralRing.rotation.x = Math.sin(time * 0.5) * 0.1;
-            this.centralRing.position.y = 1.0 + Math.sin(time * 1.5) * 0.25;
+            this.centralRing.position.y = 2.0 + Math.sin(time * 1.5) * 0.25;
         }
 
         // Render Canvas
