@@ -173,12 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Celebrate with confetti!
             triggerConfettiCelebration();
-            
-            // Fade in the center Bravo completion card
-            setTimeout(() => {
-                const bravo = document.getElementById('bravo-panel');
-                if (bravo) bravo.classList.remove('hidden');
-            }, 1500);
         }
     }
 
@@ -203,11 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const countVal = document.getElementById('unlocked-count-val');
         if (countVal) countVal.textContent = "4";
         
-        // Reveal bravo dialogue panel
-        const bravo = document.getElementById('bravo-panel');
-        if (bravo) {
-            bravo.classList.remove('hidden');
-        }
+        // No bravo dialogue panel to reveal since we removed it
     }
 
     function triggerConfettiCelebration() {
@@ -321,16 +311,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const historyDrawer = document.getElementById('history-drawer');
     const closeDrawerBtn = document.getElementById('close-drawer-btn');
 
-    readMoreBtn.addEventListener('click', () => openHistoryDrawer());
-    closeDrawerBtn.addEventListener('click', () => closeHistoryDrawer());
-
-    // Close success bravo card listener
-    const closeBravoBtn = document.getElementById('close-bravo-btn');
-    if (closeBravoBtn) {
-        closeBravoBtn.addEventListener('click', () => {
-            const bravo = document.getElementById('bravo-panel');
-            if (bravo) bravo.classList.add('hidden');
-        });
+    if (readMoreBtn) {
+        readMoreBtn.addEventListener('click', () => openHistoryDrawer());
+    }
+    if (closeDrawerBtn) {
+        closeDrawerBtn.addEventListener('click', () => closeHistoryDrawer());
     }
 
     function openHistoryDrawer() {
